@@ -1,0 +1,51 @@
+minio:
+  mode: standalone
+
+  # Override credentials via Kubernetes Secret in prod, not plain values
+  rootUser: "minioadmin"
+  rootPassword: "minioadmin123"   # change via --set or external-secrets in prod
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""              # use cluster default
+
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+
+  service:
+    type: ClusterIP
+    port: 9000
+
+  consoleService:
+    type: ClusterIP
+    port: 9001
+
+  ingress:
+    enabled: false
+  consoleIngress:
+    enabled: false
+
+  # Pre-create buckets on startup
+  buckets:
+    - name: spark-logs
+      policy: none
+      purge: false
+    - name: spark-data
+      policy: none
+      purge: false
+    - name: artifacts
+      policy: none
+      purge: false
+
+  policies: []
+  users: []
+
+  metrics:
+    serviceMonitor:
+      enabled: false

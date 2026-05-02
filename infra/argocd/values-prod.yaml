@@ -1,0 +1,40 @@
+argo-cd:
+  server:
+    service:
+      type: ClusterIP
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hostname: argocd.example.com
+      tls: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+
+  configs:
+    params:
+      server.insecure: "false"    # TLS terminated at ingress, not disabled
+
+  dex:
+    enabled: true
+
+  notifications:
+    enabled: true
+
+  repoServer:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+  server:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi

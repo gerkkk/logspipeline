@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prod
+
+namePrefix: prod-
+
+commonLabels:
+  env: prod
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+    target:
+      kind: Deployment
+
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 256Mi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 512Mi
+    target:
+      kind: Deployment
+      labelSelector: "app.kubernetes.io/name=dashboard"
+
+resources: []
+  # Uncomment when charts/dashboard is added:
+  # - ../../charts/dashboard/templates/deployment.yaml
+  # - ../../charts/dashboard/templates/service.yaml
+  # - ../../charts/dashboard/templates/ingress.yaml
