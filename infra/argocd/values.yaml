@@ -50,6 +50,9 @@ argo-cd:
     enabled: false            # enable SSO integration in prod via values-prod.yaml
 
   redis:
+    image:
+      repository: redis
+      tag: "7.0.15-alpine"
     resources:
       requests:
         cpu: 50m
