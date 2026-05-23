@@ -1,12 +1,11 @@
 minio:
   mode: standalone
 
-  # Override credentials via Kubernetes Secret in prod, not plain values
   rootUser: "minioadmin"
-  rootPassword: "minioadmin123"   # change via --set or external-secrets in prod
+  rootPassword: "minioadmin123"
 
   persistence:
-    enabled: false
+    enabled: false  # Отключаем PVC для Docker Desktop
 
   resources:
     requests:
@@ -29,7 +28,12 @@ minio:
   consoleIngress:
     enabled: false
 
-  # Pre-create buckets on startup
+  # Добавляем imagePullPolicy
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2024-05-28T17-19-04Z  # более свежая версия
+    pullPolicy: IfNotPresent  # Используем локальный образ если есть
+
   buckets:
     - name: spark-logs
       policy: none
@@ -40,9 +44,6 @@ minio:
     - name: artifacts
       policy: none
       purge: false
-
-  policies: []
-  users: []
 
   metrics:
     serviceMonitor:
