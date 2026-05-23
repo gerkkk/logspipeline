@@ -1,3 +1,4 @@
+# argocd/values.yaml
 argo-cd:
   global:
     image:
@@ -5,17 +6,15 @@ argo-cd:
 
   configs:
     params:
-      # run without TLS termination — ingress/load-balancer handles TLS
       server.insecure: "true"
     cm:
-      # allow ArgoCD to manage itself (self-managed pattern)
       application.resourceTrackingMethod: annotation
 
   server:
     service:
       type: ClusterIP
     ingress:
-      enabled: false          # enable and configure per-env in values-prod.yaml
+      enabled: false
     resources:
       requests:
         cpu: 100m
@@ -47,12 +46,13 @@ argo-cd:
     enabled: false
 
   dex:
-    enabled: false            # enable SSO integration in prod via values-prod.yaml
+    enabled: false
 
   redis:
     image:
       repository: redis
       tag: "7.0.15-alpine"
+      pullPolicy: IfNotPresent
     resources:
       requests:
         cpu: 50m

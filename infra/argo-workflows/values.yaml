@@ -14,12 +14,10 @@ argo-workflows:
       limits:
         cpu: 500m
         memory: 256Mi
-    # Store workflow artifacts in MinIO
     metricsConfig:
       enabled: true
     workflowDefaults:
       spec:
-        # default artifact repository (MinIO)
         artifactRepositoryRef:
           configMap: artifact-repositories
           key: default-v1
@@ -28,7 +26,7 @@ argo-workflows:
     enabled: true
     serviceType: ClusterIP
     extraArgs:
-      - --auth-mode=server       # use 'sso' in prod
+      - --auth-mode=server
     resources:
       requests:
         cpu: 50m
@@ -50,15 +48,18 @@ argo-workflows:
 
   useStatefulSetFiles: true
 
-  # ConfigMap defining MinIO as artifact backend
-  artifactRepository:
-    s3:
-      bucket: spark-logs
-      endpoint: minio.minio.svc.cluster.local:9000
-      insecure: true
-      accessKeySecret:
-        name: minio-credentials
-        key: rootUser
-      secretKeySecret:
-        name: minio-credentials
-        key: rootPassword
+# Создаем ConfigMap для artifact repository
+artifactRepositoryConfigMap:
+  name: artifact-repositories
+  data:
+    default-v1: |
+      s3:
+        bucket: spark-logs
+        endpoint: minio.minio.svc.cluster.local:9000
+        insecure: true
+        accessKeySecret:
+          name: minio-credentials
+          key: rootUser
+        secretKeySecret:
+          name: minio-credentials
+          key: rootPassword

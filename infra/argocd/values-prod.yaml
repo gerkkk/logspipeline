@@ -1,5 +1,18 @@
+# argocd/values-prod.yaml
 argo-cd:
+  global:
+    image:
+      tag: "v2.11.0"
+
+  configs:
+    params:
+      server.insecure: "false"  # TLS на ingress
+    cm:
+      application.resourceTrackingMethod: annotation
+      url: https://argocd.example.com
+
   server:
+    replicas: 2
     service:
       type: ClusterIP
     ingress:
@@ -9,18 +22,18 @@ argo-cd:
       tls: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
-
-  configs:
-    params:
-      server.insecure: "false"    # TLS terminated at ingress, not disabled
-
-  dex:
-    enabled: true
-
-  notifications:
-    enabled: true
+        nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi
 
   repoServer:
+    replicas: 2
     resources:
       requests:
         cpu: 200m
@@ -29,12 +42,45 @@ argo-cd:
         cpu: 1000m
         memory: 1Gi
 
-  server:
-    replicas: 2
+  applicationSet:
+    enabled: true
     resources:
       requests:
-        cpu: 200m
-        memory: 256Mi
+        cpu: 100m
+        memory: 128Mi
       limits:
-        cpu: 1000m
-        memory: 512Mi
+        cpu: 500m
+        memory: 256Mi
+
+  notifications:
+    enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+
+  dex:
+    enabled: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+
+  redis:
+    image:
+      repository: redis
+      tag: "7.0.15-alpine"
+      pullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
