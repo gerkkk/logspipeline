@@ -1,3 +1,5 @@
 data/data/target/
+data/data
 *.jar
 *.class
+spark/consultant-analysis/target/

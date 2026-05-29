@@ -1,15 +1,25 @@
-# Spark Consultant Log Analyzer
+# Spark Consultant Log Parser
 
-Spark-приложение для анализа логов системы КонсультантПлюс.
-
-## Требования
-
-- Java 11+
-- Scala 2.13
-- Apache Spark 3.4.0
-- Maven 3.6+
-
-## Сборка проекта
+## Сборка
 
 ```bash
 mvn clean package
+```
+
+## Запуск (local)
+
+```bash
+export SPARK_LOCAL_IP=127.0.0.1
+
+spark-submit \
+  --class com.consultant.ConsultantLogParseJob \
+  --master 'local[*]' \
+  --conf spark.driver.host=127.0.0.1 \
+  --conf spark.driver.bindAddress=127.0.0.1 \
+  target/spark-consultant-analysis-1.0.0.jar \
+  ../../data/data \
+  ../../data/output/parsed \
+  8
+```
+
+Аргументы: `inputDir` `outputDir` `[numPartitions]`.
