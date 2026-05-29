@@ -1,4 +1,18 @@
+apiVersion: v2
+name: argo-workflows
+description: Wrapper chart for Argo Workflows.
+type: application
+version: 0.1.0
+appVersion: "v3.5.11"
+dependencies:
+  - name: argo-workflows
+    version: "0.42.3"
+    repository: https://argoproj.github.io/argo-helm
+
 argo-workflows:
+  images:
+    pullPolicy: IfNotPresent
+  
   workflow:
     serviceAccount:
       create: true
@@ -7,6 +21,9 @@ argo-workflows:
       create: true
 
   controller:
+    image:
+      tag: v3.5.11
+      pullPolicy: IfNotPresent
     resources:
       requests:
         cpu: 100m
@@ -21,9 +38,14 @@ argo-workflows:
         artifactRepositoryRef:
           configMap: artifact-repositories
           key: default-v1
+    nodeSelector:
+      kubernetes.io/arch: arm64
 
   server:
     enabled: true
+    image:
+      tag: v3.5.11
+      pullPolicy: IfNotPresent
     serviceType: ClusterIP
     extraArgs:
       - --auth-mode=server
@@ -36,8 +58,12 @@ argo-workflows:
         memory: 128Mi
     ingress:
       enabled: false
+    nodeSelector:
+      kubernetes.io/arch: arm64
 
   executor:
+    image:
+      pullPolicy: IfNotPresent
     resources:
       requests:
         cpu: 100m
@@ -48,7 +74,6 @@ argo-workflows:
 
   useStatefulSetFiles: true
 
-# Создаем ConfigMap для artifact repository
 artifactRepositoryConfigMap:
   name: artifact-repositories
   data:
